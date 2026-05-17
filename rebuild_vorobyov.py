@@ -482,44 +482,58 @@ def main():
     set_cell_text(cells[15], '100')
 
     # Услуги 1..5 — по 3 строки на услугу
+    # СТРУКТУРА (по требованию Рязанской комиссии):
+    #   Строка А (name_row): [название услуги] + в ячейках месяцев — ВЫРУЧКА за услугу (Q*P)
+    #   Строка Б (qty_row):  "количество"     + число заказов в месяц (рваное)
+    #   Строка В (sum_row):  "стоимость"      + ЦЕНА ЗА ЕДИНИЦУ из прайса (фиксированная константа)
+    # ИТОГО:
+    #   - для name_row    = сумма выручки за 12 мес.  (жирным)
+    #   - для qty_row     = сумма заказов за 12 мес.
+    #   - для sum_row     = ПУСТО (это константа цены, не имеет ИТОГО)
+    # Доля % — только в name_row (выручка услуги / годовая выручка)
     SVC_ROW_LAYOUT = [
         # (key, idx_name_row)
         ('std', 3), ('two', 6), ('to', 9), ('fr', 12), ('dem', 15),
     ]
     for key, idx in SVC_ROW_LAYOUT:
-        # idx = строка с номером и названием
-        # idx+1 = "количество"
-        # idx+2 = "стоимость"
-        name_row = rows4[idx]
-        qty_row = rows4[idx + 1]
-        sum_row = rows4[idx + 2]
-        # Найти название услуги по ключу
+        name_row = rows4[idx]      # строка с № и названием — сюда же выручка по месяцам
+        qty_row = rows4[idx + 1]   # "количество"
+        sum_row = rows4[idx + 2]   # "стоимость" — цена за единицу
         svc_idx = SVC_KEYS.index(key)
         svc_name = SERVICES[svc_idx][0]
         price = PRICES[key]
 
-        # Имя услуги — в name_row, ячейка [1]
         nrcells = name_row.findall(NS+'tc')
-        set_cell_text(nrcells[1], svc_name)
-
-        # Количество и стоимость по 12 месяцам
         qcells = qty_row.findall(NS+'tc')
         scells = sum_row.findall(NS+'tc')
+
+        # Имя услуги — в name_row, ячейка [1]
+        set_cell_text(nrcells[1], svc_name)
+
         total_qty = 0
         total_sum = 0
         for i in range(12):
             q = QTY[key][i]
-            s = q * price
+            revenue_i = q * price
             total_qty += q
-            total_sum += s
+            total_sum += revenue_i
+            # А) выручка за услугу в месяце — в name_row
+            set_cell_text(nrcells[2 + i], fmt_rub(revenue_i) if revenue_i else '0')
+            # Б) количество заказов
             set_cell_text(qcells[2 + i], str(q) if q else '0')
-            set_cell_text(scells[2 + i], fmt_rub(s) if s else '0')
-        set_cell_text(qcells[14], str(total_qty))
-        set_cell_text(scells[14], fmt_rub(total_sum), bold=True)
-        # Доля % по выручке услуги
+            # В) стоимость = цена за единицу (фиксированная константа)
+            set_cell_text(scells[2 + i], fmt_rub(price))
+
+        # ИТОГО:
+        set_cell_text(nrcells[14], fmt_rub(total_sum), bold=True)  # годовая выручка услуги
+        set_cell_text(qcells[14], str(total_qty))                  # годовое кол-во заказов
+        set_cell_text(scells[14], '')                              # стоимость — пусто
+
+        # Доля % — только в name_row (доля выручки этой услуги от всей выручки)
         share = total_sum / annual * 100 if annual else 0
-        set_cell_text(scells[15], f'{share:.1f}'.replace('.', ','))
+        set_cell_text(nrcells[15], f'{share:.1f}'.replace('.', ','))
         set_cell_text(qcells[15], '')
+        set_cell_text(scells[15], '')
 
     # =========================================================================
     # ТАБЛИЦА #5: 5.2 Расходы — заполнение полностью
