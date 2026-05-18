@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "client_code": "solodukhin",
+    "branch": "bp-solodukhin",
+    "comment": "БП Солодухина А.Р., ниша: профессиональный клининг, г. Рязань"
+  },
+  "client": {
+    "fio": "Солодухин Арсений Романович",
+    "fio_short": "Солодухин А. Р.",
+    "birth_date": "14.04.2003",
+    "address_reg": "Рязанская обл., г. Рязань, ул. Подгорная, д. 3, кв. 33",
+    "address_fact": "Рязанская обл., г. Рязань, проезд Щедрина, д. 13А, кв. 3",
+    "phone": "+7 (920) 951-86-20",
+    "email": "rpriaa365@gmail.com",
+    "family_status": "Не женат, детей нет",
+    "education": "Среднее общее (11 классов)",
+    "inn": "623407078326",
+    "okved": "81.21 — Деятельность по общей уборке зданий"
+  },
+  "finance": {"grant": 350000, "own_funds": 19000, "total_budget": 369000},
+  "results": {"revenue_y1": 887500, "expenses_y1": 620150, "profit_y1": 267350, "profitability": 43.1, "payback": 7}
+}
